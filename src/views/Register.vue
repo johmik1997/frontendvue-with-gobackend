@@ -1,6 +1,5 @@
 <template>
   <div class="register-container">
-    <AppHeader />
     <h2>Register New Account</h2>
     <form @submit.prevent="handleRegister">
       <div class="form-group">
@@ -24,14 +23,11 @@
 </template>
 
 <script>
-import AppHeader from '@/components/Navbar.vue'
+
 import axios from 'axios'
 
 export default {
   name: 'UserRegister',
-  components: {
-    AppHeader
-  },
   data() {
     return {
       username: '',
