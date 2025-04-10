@@ -1,8 +1,8 @@
 <template>
     <div class="home-view">
       <Navbar />
-      <HeroSection />
       <!-- Other home page content -->
+      <HeroSection />
     </div>
   </template>
   

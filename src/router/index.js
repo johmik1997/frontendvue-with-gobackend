@@ -7,6 +7,8 @@ import Logout from '../views/logout.vue'
 import AdminDashboard from '../views/adminDashboard.vue'
 import UserDashboard from '../views/userDashboard.vue'
 import AddEmp from '../views/addEmp.vue'
+import UpComingevent from '@/views/upComingevent.vue'
+import Teammember from '@/views/Teammember.vue'
 //import Dashboard from '../views/Dashboard.vue'
 const routes = [
   {
@@ -45,12 +47,23 @@ const routes = [
     path: '/admin/view',
     name: 'EmployeeList',
     component: EmployeeList,
-    meta: { requiresAuth: true }
+    //meta: { requiresAuth: true }
   },
+  
   {
     path: '/register',
     name: 'userRegister',
     component: Register
+  },
+  {
+    path: '/upcoming',
+    name: 'UpcomingEvents',
+    component: UpComingevent
+  },
+  {
+    path: '/teammember',
+    name: 'TeamMember',
+    component: Teammember
   }
 ]
 

@@ -23,78 +23,69 @@
 
 <script>
 import axios from 'axios'
-import router from '../router' 
+
 export default {
   name: 'UserLogin',
   data() {
     return {
-      username: 'melkam',
-      password: '64382',
+      username: '',
+      password: '',
       error: '',
       loading: false
     }
   },
   methods: {
     async handleLogin() {
-  this.loading = true
-  this.error = ''
+      this.loading = true
+      this.error = ''
 
-  const graphqlMutation = `
-    mutation LoginUser($username: String!, $password: String!) {
-      login(username: $username, password: $password)
-    }
-  `
+      const graphqlMutation = `
+        mutation LoginUser($username: String!, $password: String!) {
+          login(username: $username, password: $password)
+        }
+      `
 
-  try {
-    const response = await axios.post('http://localhost:8080/graphql', {
-      query: graphqlMutation,
-      variables: {
-        username: this.username,
-        password: this.password
+      try {
+        const response = await axios.post('http://localhost:8080/graphql', {
+          query: graphqlMutation,
+          variables: {
+            username: this.username,
+            password: this.password
+          }
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+
+        if (response.data.errors) {
+          throw new Error(response.data.errors[0].message)
+        }
+
+        const token = response.data.data.login
+        if (token) {
+          localStorage.setItem('token', token) 
+          console.log(token)
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+
+          const payload = JSON.parse(atob(token.split('.')[1]))
+          const isAdmin = payload.isAdmin === true
+
+          if (isAdmin) {
+            this.$router.push('/adminDashboard')
+          } else {
+            this.$router.push('/userDashboard')
+          }
+        }
+
+      } catch (err) {
+        this.error = err.message || 'Login failed'
+      } finally {
+        this.loading = false
       }
-    }, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-
-    if (response.data.errors) {
-      throw new Error(response.data.errors[0].message)
     }
-
-    const token = response.data.data.login
-    console.log('Received token:', token)
-     
-    if (token) {
-      localStorage.setItem('authToken', token)
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      const payload = JSON.parse(atob(token.split('.')[1]))
-       const isAdmin = payload.isAdmin === true
-       if (isAdmin) {
-      this.$router.push('/adminDashboard')
-    } else {
-      this.$router.push('/userDashboard')
-    }
-      router.push('/adminDashboard') // Redirect to protected route
-    }
-    // localStorage.setItem('token', token)
-    // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-
-    // 🔍 Decode the token (simple base64 decode, no external libraries needed)
-   // In your handleLogin method:
-  // Changed to match token
-
-    // 🚀 Redirect based on admin status
-   
-
-  } catch (err) {
-    this.error = err.message || 'Login failed'
-  } finally {
-    this.loading = false
   }
 }
-
-}}
 </script>
 
 <style scoped>

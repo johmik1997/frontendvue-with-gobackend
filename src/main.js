@@ -4,6 +4,9 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client/core
 import { createApolloProvider } from '@vue/apollo-option'
 import App from './App.vue'
 import router from './router'
+import Toast from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
+
 
 // Apollo Client setup
 const httpLink = createHttpLink({
@@ -23,6 +26,7 @@ const apolloProvider = createApolloProvider({
 })
 
 const app = createApp(App)
+app.use(Toast)
 app.use(createPinia())
 app.use(router)
 app.use(apolloProvider)

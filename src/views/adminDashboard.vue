@@ -4,6 +4,5 @@
     </div>
 </template>
 <script setup>
-import AdminDashboard from '../components/adminDash.vue'
-
+import AdminDashboard from '../components/adminHero.vue'
 </script>

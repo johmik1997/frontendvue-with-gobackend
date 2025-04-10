@@ -23,6 +23,7 @@
 
 <script>
 import api from '../api/api'
+import authService from '../api/auth'
 
 export default {
   data() {
@@ -36,45 +37,64 @@ export default {
     await this.fetchEmployees()
   },
   methods: {
-    async fetchEmployees() {
-      try {
-        this.loading = true
-        this.error = null
-        const data = await api.queryGraphQL(`
-          query {
-            employeeDetails {
-              id
-              empId
-              empName
-              department
-              experience
-              address
-              birthdate
-              employePhoto
-            }
+  async fetchEmployees() {
+    try {
+      this.loading = true
+      this.error = null
+      
+      const data = await api.queryGraphQL(`
+        query {
+          employeeDetails {
+            id
+            empId
+            empName
+            department
+            experience
+            address
+            birthdate
+            employePhoto
           }
-        `)
-        this.employees = data.employeeDetails || []
-      } catch (err) {
-        this.error = err.message || 'Failed to load employee data'
-        console.error('Error:', err)
-      } finally {
-        this.loading = false
+        }
+      `)
+      
+      this.employees = data.employeeDetails || []
+    } catch (err) {
+      this.error = err.message
+      console.error('API Error:', err)
+      
+      // Handle specific error cases
+      if (err.message.includes('Session expired')) {
+        this.logout()
       }
-    },
+    } finally {
+      this.loading = false
+    }
+  },
+  // ... rest of the methods
     formatDate(dateString) {
-      if (!dateString) return null
-      const date = new Date(dateString)
-      return date.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })
-    },
+  if (!dateString) return 'Unknown'
+  try {
+    // Handle both ISO strings and already formatted dates
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) {
+      return dateString // Return as-is if not parsable
+    }
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  } catch {
+    return dateString
   }
-}
+},
+    logout() {
+      authService.logout()
+      this.$router.push('/')
+    }
+  
+}}
 </script>
-
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
 
