@@ -10,9 +10,8 @@ import AddEmp from '../views/addEmp.vue'
 import UpComingevent from '@/views/upComingevent.vue'
 import Teammember from '@/views/Teammember.vue'
 import Updateemploye from '@/views/updateemploye.vue'
-import Profile from '@/views/profile.vue'
-import Announcment from '@/views/announcment.vue'
-//import Dashboard from '../views/Dashboard.vue'
+import ProfileEmployee from '@/views/profile.vue'
+import AnnouncmentUser from '@/views/announcment-user.vue'
 const routes = [
   {
     path: '/',
@@ -27,13 +26,12 @@ const routes = [
   },
   {
     path: '/anouncment',
-    name:'announce',
-    component: Announcment
+    component: AnnouncmentUser
   },
   {
     path: '/profile',
-    name:'profile',
-    component: Profile
+    name:'Profile_User',
+    component: ProfileEmployee
   },
   {
     path: '/admindashboard',

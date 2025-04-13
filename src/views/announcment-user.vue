@@ -16,7 +16,6 @@
         </div>
     </div>
 </template>
-
 <style scoped>
 .announcement-container {
     display: flex;

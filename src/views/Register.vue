@@ -54,7 +54,7 @@ export default {
       `
 
       try {
-        const response = await axios.post('http://localhost:8080/graphql', {
+        const response = await axios.post('http://localhost:8082/graphql', {
           query,
           variables: {
             username: this.username,

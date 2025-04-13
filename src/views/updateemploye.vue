@@ -1,6 +1,6 @@
 <template>
 <div>
-  <AdminNav/>
+ 
 </div>
   <div class="employee-list fantasy-scroll">
     <h2 class="fantasy-title">Guild Members' Records</h2>
@@ -124,7 +124,6 @@
 
 <script>
 import api from '../api/api'
-import AdminNav from '@/components/adminNav.vue'
 export default {
   name: 'EmployeeList',
   data() {

@@ -1,7 +1,5 @@
 <template>
-  <AdminNav/>
   <div class="employee-list fantasy-scroll">
-    <adminNav/>
     <h2 class="fantasy-title">Guild Members' Records</h2>
     <div v-if="loading" class="fantasy-loading">Summoning data from the archives...</div>
     <div v-else-if="error" class="fantasy-error">⚠️ A dark force blocks our path: {{ error }}</div>
@@ -34,7 +32,6 @@
 </template>
 
 <script>
-import AdminNav from '@/components/adminNav.vue'
 import api from '../api/api'
 import authService from '../api/auth'
 
