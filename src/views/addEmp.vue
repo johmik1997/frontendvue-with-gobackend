@@ -3,6 +3,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import AdminNav from '@/components/adminNav.vue'
 
 const form = ref({
   empName: '',
@@ -171,6 +172,7 @@ const showMessage = (msg, isSuccess) => {
 </script>
 
 <template>
+  <AdminNav/>
   <div class="add-employee-container">
     <h2 class="page-title">Add New Employee</h2>
 

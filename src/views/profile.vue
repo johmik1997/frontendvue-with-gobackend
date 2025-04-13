@@ -30,7 +30,7 @@
       this.loading = true
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get('http://localhost:8080/profile', {
+        const response = await axios.get('http://localhost:8082/profile', {
           headers: {
             Authorization: `Bearer ${token}`
           }

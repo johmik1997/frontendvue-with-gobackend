@@ -1,6 +1,4 @@
 <template>
-  <div class="dashboard-container">
-    <!-- Admin Navbar -->
     <nav class="navbar">
       <div class="navbar-left">
         <RouterLink to="/" class="logo-link">
@@ -48,24 +46,6 @@
         </div>
       </div>
     </nav>
-
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <h1>Welcome, Admin</h1>
-        <p>Manage all employee accounts from one place. Add, update, delete, and view employee data with ease.</p>
-        <RouterLink to="/admin/view" class="get-started-button">
-          Get Started
-        </RouterLink>
-      </div>
-    </section>
-
-    <!-- Main Content -->
-    <main class="main-content">
-      <router-view></router-view>
-    </main>
-  </div>
 </template>
 
 <script setup>
@@ -79,6 +59,7 @@ const adminLinks = ref([
   { name: 'Add Employee', path: '/admin/add' },
   { name: 'View Employees', path: '/admin/view' },
   { name: 'Update Employee', path: '/admin/update' }
+
 ])
 
 function toggleDropdown() {
@@ -115,7 +96,7 @@ const clickOutside = {
 }
 
 export default {
-  name: 'AdminDashboard',
+  name: 'adminNavbar',
   directives: {
     'click-outside': clickOutside
   }
@@ -124,23 +105,16 @@ export default {
 
 <style scoped>
 /* Base Styles */
-.dashboard-container {
-  min-height: 100vh;
-  background-color: #f8fafc;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-/* Navbar Styles */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: white;
   padding: 1rem 2rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  position: sticky;
-  top: 0;
-  z-index: 50;
+  background-color: #2c3e50;
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1000;
 }
 
 .navbar-left {
@@ -150,18 +124,13 @@ export default {
 }
 
 .logo {
-  height: 2.5rem;
-  transition: transform 0.2s ease;
-}
-
-.logo:hover {
-  transform: scale(1.05);
+  height: 40px;
+  width: auto;
 }
 
 .dashboard-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1e40af;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .navbar-right {
@@ -171,35 +140,15 @@ export default {
 }
 
 .nav-link {
-  color: #4b5563;
-  font-weight: 500;
-  padding: 0.5rem 0;
+  color: white;
   text-decoration: none;
-  position: relative;
-  transition: color 0.2s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
-.nav-link:hover {
-  color: #1e40af;
-}
-
-.active-link {
-  color: #1e40af;
-}
-
-.active-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #1e40af;
-}
-
-/* Dropdown Styles */
-.auth-dropdown {
-  position: relative;
+.nav-link:hover, .active-link {
+  background-color: #34495e;
 }
 
 .auth-button {
@@ -207,151 +156,113 @@ export default {
   border: none;
   cursor: pointer;
   padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .avatar {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  border: 2px solid #e2e8f0;
-  transition: all 0.2s ease;
+  object-fit: cover;
+  border: 2px solid #ecf0f1;
 }
 
-.avatar:hover {
-  border-color: #1e40af;
+.auth-dropdown {
+  position: relative;
 }
 
 .dropdown-menu {
   position: absolute;
   right: 0;
-  top: 3.5rem;
+  top: 100%;
   background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  min-width: 12rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
   overflow: hidden;
-  z-index: 10;
+  z-index: 1001;
 }
 
 .dropdown-item {
   display: block;
-  width: 100%;
   padding: 0.75rem 1rem;
-  text-align: left;
-  color: #4b5563;
+  color: #2c3e50;
   text-decoration: none;
+  text-align: left;
+  width: 100%;
   background: none;
   border: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
   cursor: pointer;
 }
 
 .dropdown-item:hover {
-  background-color: #f1f5f9;
-  color: #1e40af;
+  background-color: #f5f5f5;
 }
 
-/* Transition Effects */
+/* Dropdown Transition */
 .dropdown-transition-enter-active,
 .dropdown-transition-leave-active {
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .dropdown-transition-enter-from,
 .dropdown-transition-leave-to {
   opacity: 0;
-  transform: translateY(-0.5rem);
+  transform: translateY(-10px);
 }
 
-/* Hero Section */
-.hero-section {
-  position: relative;
-  height: 100vh;
-  background: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center center/cover no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  text-align: center;
-}
-
-.hero-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to right, rgba(30, 64, 175, 0.8), rgba(49, 46, 129, 0.8));
-}
-
-.hero-content {
-  position: relative;
-  z-index: 1;
-  max-width: 48rem;
-  padding: 0 2rem;
-}
-
-.hero-content h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
-  line-height: 1.2;
-}
-
-.hero-content p {
-  font-size: 1.125rem;
-  margin-bottom: 2rem;
-  opacity: 0.9;
-  line-height: 1.6;
-}
-
-.get-started-button {
-  display: inline-block;
-  background-color: white;
-  color: #1e40af;
-  font-weight: 600;
-  padding: 0.75rem 2rem;
-  border-radius: 0.5rem;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.get-started-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-/* Main Content */
-.main-content {
-  padding: 3rem 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
+/* Mobile Styles */
 @media (max-width: 768px) {
   .navbar {
+    padding: 0.75rem 1rem;
     flex-direction: column;
-    padding: 1rem;
-    gap: 1rem;
+    align-items: stretch;
   }
-  
-  .navbar-right {
-    width: 100%;
+
+  .navbar-left {
     justify-content: space-between;
+    padding: 0.5rem 0;
   }
-  
-  .hero-content h1 {
-    font-size: 2rem;
+
+  .navbar-right {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
   }
-  
-  .hero-content p {
-    font-size: 1rem;
+
+  .navbar-right.show {
+    max-height: 500px; /* Adjust based on your content */
+    padding: 0.5rem 0;
+  }
+
+  .nav-link {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .auth-dropdown {
+    width: 100%;
+  }
+
+  .dropdown-menu {
+    position: static;
+    width: 100%;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  /* Mobile Menu Toggle Button (add this to your template) */
+  .mobile-menu-toggle {
+    display: block;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
   }
 }
 </style>

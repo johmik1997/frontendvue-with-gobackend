@@ -10,6 +10,8 @@ import AddEmp from '../views/addEmp.vue'
 import UpComingevent from '@/views/upComingevent.vue'
 import Teammember from '@/views/Teammember.vue'
 import Updateemploye from '@/views/updateemploye.vue'
+import Profile from '@/views/profile.vue'
+import Announcment from '@/views/announcment.vue'
 //import Dashboard from '../views/Dashboard.vue'
 const routes = [
   {
@@ -22,6 +24,16 @@ const routes = [
     path: '/login',
     name:'UserLogin',
     component: Login
+  },
+  {
+    path: '/anouncment',
+    name:'announce',
+    component: Announcment
+  },
+  {
+    path: '/profile',
+    name:'profile',
+    component: Profile
   },
   {
     path: '/admindashboard',

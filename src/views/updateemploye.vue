@@ -1,5 +1,7 @@
-
 <template>
+<div>
+  <AdminNav/>
+</div>
   <div class="employee-list fantasy-scroll">
     <h2 class="fantasy-title">Guild Members' Records</h2>
     
@@ -61,10 +63,10 @@
         <div class="form-group">
           <label>Order</label>
           <select v-model="editingEmployee.department" class="modal-input">
-            <option value="Alchemy">Alchemy</option>
-            <option value="Divination">Divination</option>
-            <option value="Enchantment">Enchantment</option>
-            <option value="Illusion">Illusion</option>
+            <option value="computerScience">computer-science</option>
+            <option value="nutrition">Human-nutrition</option>
+            <option value="medicaldoctor">Medical doctor</option>
+            <option value="civil">Civil-Engineering</option>
           </select>
         </div>
         
@@ -106,10 +108,11 @@
         <h3 class="modal-title">Banish Member from Guild?</h3>
         <p>This action cannot be undone. The member's records will be erased from all archives.</p>
         <div class="modal-actions">
-          <button @click="deleteEmployee" class="spell-button banish-spell" :disabled="deleting">
-            <span v-if="deleting">Banishing...</span>
-            <span v-else><i class="fas fa-broom"></i> Confirm Banishment</span>
-          </button>
+         <!-- In your delete confirmation modal -->
+<button @click="deleteEmployee" class="spell-button banish-spell" :disabled="deleting">
+  <span v-if="deleting">Banishing...</span>
+  <span v-else><i class="fas fa-broom"></i> Confirm Banishment</span>
+</button>
           <button @click="showDeleteConfirm = false" class="spell-button cancel-spell">
             <i class="fas fa-times"></i> Cancel
           </button>
@@ -121,7 +124,7 @@
 
 <script>
 import api from '../api/api'
-
+import AdminNav from '@/components/adminNav.vue'
 export default {
   name: 'EmployeeList',
   data() {
@@ -200,35 +203,32 @@ export default {
       event.target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%235b3c11"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="10">No Portrait</text></svg>'
     },
     openEditModal(emp) {
-      this.editingEmployee = { ...emp }
+      this.editingEmployee = { 
+        ...emp,
+        birthdate: emp.birthdate ? emp.birthdate.split('T')[0] : '' // Format for date input
+      }
       this.showEditModal = true
     },
     async updateEmployee() {
       try {
         this.updating = true
         await api.queryGraphQL(`
-          mutation UpdateEmployee(
-            $id: Int!
-            $empName: String!
-            $department: String!
-            $experience: Int!
-            $address: String!
-            $birthdate: String!
-            $employePhoto: String
-          ) {
-            updateEmployee(
-              id: $id
-              empName: $empName
-              department: $department
-              experience: $experience
-              address: $address
-              birthdate: $birthdate
-              employePhoto: $employePhoto
-            ) {
-              id
-              empName
-            }
-          }
+       mutation UpdateEmployee($id: Int!, $empName: String!, $department: String!, $experience: Int!, $address: String!, $birthdate: String!, $employePhoto: String) {
+  updateEmployee(
+    id: $id
+    empName: $empName
+    department: $department
+    experience: $experience
+    address: $address
+    birthdate: $birthdate
+    employePhoto: $employePhoto
+  ) {
+    id
+    empName
+    department
+    experience
+  }
+}
         `, {
           id: this.editingEmployee.id,
           empName: this.editingEmployee.empName,
@@ -239,7 +239,6 @@ export default {
           employePhoto: this.editingEmployee.employePhoto
         })
 
-        // Simple alert instead of toast
         alert(`${this.editingEmployee.empName}'s scroll has been updated!`)
         this.showEditModal = false
         await this.fetchEmployees()
@@ -254,27 +253,40 @@ export default {
       this.employeeToDelete = id
       this.showDeleteConfirm = true
     },
-    async deleteEmployee() {
-      try {
-        this.deleting = true
-        await api.queryGraphQL(`
-          mutation DeleteEmployee($id: Int!) {
-            deleteEmployee(id: $id)
-          }
-        `, {
-          id: this.employeeToDelete
-        })
-
-        alert('Member has been banished from the guild!')
-        this.showDeleteConfirm = false
-        await this.fetchEmployees()
-      } catch (err) {
-        alert(`Banishment failed: ${err.message}`)
-        console.error('Delete error:', err)
-      } finally {
-        this.deleting = false
+    async deleteEmployee() {  // Remove the id parameter since we're using employeeToDelete
+  try {
+    this.deleting = true;
+    const id = this.employeeToDelete; // Get the stored ID
+    
+    console.log('Attempting to delete employee ID:', id);
+    
+    const response = await api.queryGraphQL(`
+      mutation DeleteEmployee($id: Int!) {
+        deleteEmployee(id: $id)
       }
+    `, { id: id });
+
+    console.log('Delete response:', response);
+
+    if (response.errors) {
+      const errorMsg = response.errors.map(e => e.message).join(', ');
+      throw new Error(`GraphQL Error: ${errorMsg}`);
     }
+
+    if (!response.data?.deleteEmployee) {
+      throw new Error('Deletion failed - no data returned');
+    }
+
+    alert('Member has been banished from the guild!');
+    this.showDeleteConfirm = false;
+    await this.fetchEmployees(); // Refresh the list
+  } catch (error) {
+    console.error('Delete failed:', error);
+    alert(`Banishment failed: ${error.message}`);
+  } finally {
+    this.deleting = false;
+  }
+}
   }
 }
 </script>
