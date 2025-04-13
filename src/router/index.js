@@ -9,6 +9,7 @@ import UserDashboard from '../views/userDashboard.vue'
 import AddEmp from '../views/addEmp.vue'
 import UpComingevent from '@/views/upComingevent.vue'
 import Teammember from '@/views/Teammember.vue'
+import Updateemploye from '@/views/updateemploye.vue'
 //import Dashboard from '../views/Dashboard.vue'
 const routes = [
   {
@@ -33,6 +34,11 @@ const routes = [
     component: AddEmp
    },
   {
+    path: '/admin/update',
+    name:'updateEmployes',
+    component: Updateemploye
+   },
+  {
     path: '/userdashboard',
     name:'userDashboard',
     component: UserDashboard
@@ -47,7 +53,7 @@ const routes = [
     path: '/admin/view',
     name: 'EmployeeList',
     component: EmployeeList,
-    //meta: { requiresAuth: true }
+    meta: { requiresAuth: true }
   },
   
   {
@@ -62,7 +68,7 @@ const routes = [
   },
   {
     path: '/teammember',
-    name: 'TeamMember',
+    name: 'Team_Member',
     component: Teammember
   }
 ]

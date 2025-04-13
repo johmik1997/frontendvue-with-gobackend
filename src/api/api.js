@@ -1,40 +1,68 @@
+
 import axios from 'axios'
-const API_URL = 'http://localhost:8080/graphql'
+
+const instance = axios.create({
+  baseURL: 'http://localhost:8082/',
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  },
+  timeout: 10000
+})
+
+instance.interceptors.request.use(config => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+    console.log(token)
+  }
+  return config
+}, error => {
+  return Promise.reject(error)
+})
+
+instance.interceptors.response.use(response => {
+  return response
+}, error => {
+  if (error.response) {
+    // Improved error logging
+    console.error('API Error Details:', {
+      status: error.response.status,
+      data: error.response.data,
+      headers: error.response.headers
+    })
+    
+    if (error.response.status === 401) {
+      localStorage.removeItem('token')
+      // You might want to redirect to login here
+    }
+  }
+  return Promise.reject(error)
+})
+
 export default {
   async queryGraphQL(query, variables = {}) {
-    const token = localStorage.getItem('token')
-    if (!token) {
-      throw new Error('No authentication token found')
-    }
-
     try {
-      const response = await axios.post(API_URL, {
-        query,
+      // Stringify the entire body to ensure proper formatting
+      const requestBody = JSON.stringify({
+        query: query.trim(), // Trim whitespace from query
         variables
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        timeout: 10000
       })
+
+      const response = await instance.post('/graphql', requestBody)
 
       if (response.data.errors) {
         const errorMessages = response.data.errors.map(err => err.message).join('\n')
-        throw new Error(`GraphQL Error:\n${errorMessages}`)
+        throw new Error(`GraphQL Error: ${errorMessages}`)
       }
-
+      console.log('Raw API response:', response.data);
       return response.data.data
     } catch (error) {
-      if (error.response) {
-        // Handle 401 Unauthorized
-        if (error.response.status === 401) {
-          localStorage.removeItem('token')
-          throw new Error('Session expired. Please login again.')
-        }
-        throw new Error(error.response.data.message || `Request failed (${error.response.status})`)
-      }
+      console.error('Full API Error:', {
+        message: error.message,
+        request: error.config?.data,
+        response: error.response?.data
+      })
       throw error
     }
   }

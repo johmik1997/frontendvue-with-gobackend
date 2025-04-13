@@ -43,103 +43,126 @@ const submitForm = async () => {
 
   // Validate photo URL if provided
   if (form.value.employePhoto && !isValidUrl(form.value.employePhoto)) {
-    showMessage('Please enter a valid URL for the photo', false)
+    showMessage('Please enter a valid URL for the photo (e.g., https://example.com/image.jpg)', false)
     return
   }
+
+  // Format birthdate to YYYY-MM-DD
+  const formattedBirthdate = birthdate.toISOString().split('T')[0]
 
   loading.value = true
   message.value = ''
-  const token = localStorage.getItem('authToken')
-  console.log('Current token:', token)
-  // Get token from storage
-  if (!token) {
-    showMessage('Please login first', false)
-    await router.push('/login')
-    loading.value = false
-    return
-  }
-
+  
   try {
-    const response = await axios.post('http://localhost:8080/graphql', {
-      query: `
-        mutation AddEmployee(
-          $empName: String!,
-          $department: String!,
-          $experience: Int!,
-          $address: String!,
-          $birthdate: String!,
-          $employePhoto: String
-        ) {
-          addEmployee(
-            empName: $empName,
-            department: $department,
-            experience: $experience,
-            address: $address,
-            birthdate: $birthdate,
-            employePhoto: $employePhoto
+    const response = await axios.post('http://localhost:8082/graphql', 
+      {
+        query: `
+          mutation AddEmployee(
+            $empName: String!,
+            $department: String!,
+            $experience: Int!,
+            $address: String!,
+            $birthdate: String!,
+            $employePhoto: String
           ) {
-            id
-            empName
-            department
+            addEmployee(
+              empName: $empName,
+              department: $department,
+              experience: $experience,
+              address: $address,
+              birthdate: $birthdate,
+              employePhoto: $employePhoto
+            ) {
+              id
+              empName
+              department
+              experience
+              address
+              birthdate
+              employePhoto
+            }
           }
+        `,
+        variables: {
+          empName: form.value.empName.trim(),
+          department: form.value.department.trim(),
+          experience: experience,
+          address: form.value.address.trim(),
+          birthdate: formattedBirthdate,
+          employePhoto: form.value.employePhoto?.trim() || null
         }
-      `,
-      variables: {
-        empName: form.value.empName.trim(),
-        department: form.value.department.trim(),
-        experience: experience,
-        address: form.value.address.trim(),
-        birthdate: birthdate.toISOString().split('T')[0],
-        employePhoto: form.value.employePhoto?.trim() || null
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        }
       }
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    })
+    )
 
     if (response.data.errors) {
       throw new Error(response.data.errors[0].message)
     }
 
-    if (response.data.data.addEmployee) {
-      const newEmployee = response.data.data.addEmployee
-      showMessage(`Successfully added ${newEmployee.empName} to ${newEmployee.department}`, true)
-      // Reset form
-      form.value = {
-        empName: '',
-        department: '',
-        experience: 0,
-        address: '',
-        birthdate: '',
-        employePhoto: ''
-      }
-      // Redirect after delay
-      
-      setTimeout(() => router.push('/admin/view'), 1500)
+    if (!response.data.data?.addEmployee) {
+      throw new Error('Failed to add employee: No data returned')
     }
-  }catch (error) {
-    console.error('Full error:', error.response?.data || error)
-    if (error.response?.status === 401) {
-      showMessage('Session expired, please login again', false)
-      localStorage.removeItem('authToken')
-      router.push('/login')
-    } else {
-      showMessage(error.response?.data?.errors?.[0]?.message || 'Failed to add employee', false)
+
+    const newEmployee = response.data.data.addEmployee
+    showMessage(`Successfully added ${newEmployee.empName} to ${newEmployee.department}`, true)
+    
+    // Reset form
+    form.value = {
+      empName: '',
+      department: '',
+      experience: 0,
+      address: '',
+      birthdate: '',
+      employePhoto: ''
     }
+    
+    // Redirect after delay
+    setTimeout(() => router.push('/admin/view'), 1500)
+
+  } catch (error) {
+    console.error('Error adding employee:', error)
+    showMessage(
+      error.response?.data?.errors?.[0]?.message || 
+      error.message || 
+      'Failed to add employee', 
+      false
+    )
+  } finally {
+    loading.value = false
   }
 }
-
 function isValidUrl(string) {
   try {
-    new URL(string)
-    return true
+    // Basic URL validation
+    const url = new URL(string)
+    
+    // Additional checks for photo URLs
+    const validProtocols = ['http:', 'https:']
+    if (!validProtocols.includes(url.protocol)) {
+      return false
+    }
+    
+    // Optionally check for common image extensions
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif']
+    const hasImageExtension = imageExtensions.some(ext => 
+      url.pathname.toLowerCase().endsWith(ext)
+    )
+    
+    return hasImageExtension // Return true only if it looks like an image URL
   } catch (_) {
     return false  
   }
 }
-
+const validatePhotoUrl = () => {
+  if (form.value.employePhoto && !isValidUrl(form.value.employePhoto)) {
+    showMessage('Please enter a valid URL for the photo', false)
+  }
+}
 const showMessage = (msg, isSuccess) => {
   message.value = msg
   success.value = isSuccess
@@ -220,15 +243,19 @@ const showMessage = (msg, isSuccess) => {
 
       <!-- Employee Photo -->
       <div class="form-group">
-        <label for="employePhoto">Employee Photo URL</label>
-        <input 
-          type="url" 
-          id="employePhoto" 
-          v-model="form.employePhoto" 
-          class="input-field" 
-          placeholder="Enter photo URL (optional)"
-        />
-      </div>
+  <label for="employePhoto">Employee Photo URL</label>
+  <input 
+    type="url" 
+    id="employePhoto" 
+    v-model="form.employePhoto" 
+    class="input-field" 
+    placeholder="Enter photo URL (optional)"
+    @blur="validatePhotoUrl"
+  />
+  <small v-if="form.employePhoto && !isValidUrl(form.employePhoto)" class="error-text">
+    Please enter a valid URL (e.g., https://example.com/photo.jpg)
+  </small>
+</div>
 
       <!-- Submit Button -->
       <div class="form-group">
