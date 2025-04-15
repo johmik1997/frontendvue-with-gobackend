@@ -55,7 +55,7 @@ const submitForm = async () => {
   message.value = ''
   
   try {
-    const response = await axios.post('http://localhost:8082/graphql', 
+    const response = await axios.post('https://backendwithgo.onrender.com/graphql', 
       {
         query: `
           mutation AddEmployee(
