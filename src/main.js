@@ -7,7 +7,7 @@ import 'vue3-toastify/dist/index.css'
 import axios from 'axios'
 
 // Configure axios
-axios.defaults.baseURL = 'http://localhost:8082'
+axios.defaults.baseURL = 'https://backendwithgo.onrender.com/'
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem('token')
   if (token) {

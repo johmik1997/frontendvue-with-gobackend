@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance
 const api = axios.create({
-  baseURL: 'http://localhost:8082'
+  baseURL: 'https://backendwithgo.onrender.com'
 });
 
 // Request interceptor to inject token

@@ -4,7 +4,7 @@ import axios from 'axios'
 
 export default {
   async login(username, password) {
-    const response = await axios.post('http://localhost:8082/graphql', {
+    const response = await axios.post('https://backendwithgo.onrender.com/graphql', {
       query: `
         mutation LoginUser($username: String!, $password: String!) {
           login(username: $username, password: $password)

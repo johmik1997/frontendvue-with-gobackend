@@ -54,7 +54,7 @@ export default {
       `
 
       try {
-        const response = await axios.post('http://localhost:8082/graphql', {
+        const response = await axios.post('https://backendwithgo.onrender.com/graphql', {
           query,
           variables: {
             username: this.username,
