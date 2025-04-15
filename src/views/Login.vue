@@ -258,7 +258,7 @@ export default {
 }
 
 .login-button {
-  background-color: var(--primary-color);
+  background-color: #4361ee;
   color: white;
   border: none;
   padding: 0.85rem;
@@ -277,10 +277,10 @@ export default {
   background-color: var(--primary-hover);
 }
 
-.login-button:disabled {
+/* .login-button:disabled {
   background-color: #adb5bd;
   cursor: not-allowed;
-}
+} */
 
 .button-loader {
   width: 20px;
