@@ -39,48 +39,45 @@ export default {
   },
   methods: {
     async handleRegister() {
-      this.loading = true
-      this.error = ''
-      this.success = ''
+  this.loading = true;
+  this.error = '';
+  this.success = '';
 
-      // GraphQL mutation with variables for security
-      const query = `
-        mutation RegisterUser($username: String!, $password: String!) {
-          register(username: $username, password: $password) {
-            id
-            username
-          }
-        }
-      `
-
-      try {
-        const response = await axios.post('https://backendwithgo.onrender.com/graphql', {
-          query,
-          variables: {
-            username: this.username,
-            password: this.password
-          }
-        }, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-
-        if (response.data.errors) {
-          throw new Error(response.data.errors[0].message)
-        }
-
-        if (response.data.data.register) {
-          this.success = 'Registration successful! Redirecting to login...'
-          setTimeout(() => this.$router.push('/'), 1500)
-        }
-      } catch (err) {
-        this.error = err.message || 'Registration failed. Please try again.'
-        console.error('Registration error:', err)
-      } finally {
-        this.loading = false
+  const query = `
+    mutation RegisterUser($username: String!, $password: String!) {
+      register(username: $username, password: $password) {
+        id
+        username
       }
     }
+  `;
+
+  try {
+    const response = await axios.post('https://backendwithgo.onrender.com/graphql', {
+      query,
+      variables: {
+        username: this.username,
+        password: this.password
+      }
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.data.errors) {
+      throw new Error(response.data.errors[0].message);
+    }
+
+    this.success = 'Registration successful! Redirecting to login...';
+    setTimeout(() => this.$router.push('/login'), 1500);
+  } catch (err) {
+    this.error = err.message || 'Registration failed. Please try again.';
+    console.error('Registration error:', err);
+  } finally {
+    this.loading = false;
+  }
+}
   }
 }
 </script>
